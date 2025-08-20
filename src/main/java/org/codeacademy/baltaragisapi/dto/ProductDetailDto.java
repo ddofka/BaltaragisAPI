@@ -1,5 +1,6 @@
 package org.codeacademy.baltaragisapi.dto;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -18,6 +19,7 @@ public class ProductDetailDto {
     @Schema(example = "High-quality giclée print of a sunset.") String longDesc;
     @Schema(example = "3") Integer quantity;
     @Schema(description = "Photo URLs") List<String> photos;
+    @Schema(description = "Last update timestamp") OffsetDateTime updatedAt;
 }
 
 

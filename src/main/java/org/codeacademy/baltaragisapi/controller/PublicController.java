@@ -13,8 +13,12 @@ import org.codeacademy.baltaragisapi.service.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.OffsetDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -36,8 +40,26 @@ public class PublicController {
     }
 
     @GetMapping("/artist")
-    public ArtistDto getArtist() {
-        return artistService.getProfile();
+    @Operation(summary = "Get artist profile",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Artist profile",
+                headers = {
+                    @io.swagger.v3.oas.annotations.headers.Header(name = "ETag", description = "Entity tag for caching", example = "\"abc123\""),
+                    @io.swagger.v3.oas.annotations.headers.Header(name = "Last-Modified", description = "Last modification date", example = "Wed, 21 Oct 2015 07:28:00 GMT"),
+                    @io.swagger.v3.oas.annotations.headers.Header(name = "Cache-Control", description = "Cache control directive", example = "public, max-age=600")
+                }),
+            @ApiResponse(responseCode = "304", description = "Not modified (conditional request)")
+        }
+    )
+    public ResponseEntity<ArtistDto> getArtist() {
+        ArtistDto artist = artistService.getProfile();
+        String etag = generateETag(artist);
+        OffsetDateTime lastModified = artist.getUpdatedAt();
+        
+        return ResponseEntity.ok()
+            .eTag(etag)
+            .lastModified(lastModified.toInstant())
+            .body(artist);
     }
 
     @GetMapping("/products")
@@ -48,7 +70,10 @@ public class PublicController {
             @Parameter(name = "size", description = "Page size", example = "12")
         },
         responses = {
-            @ApiResponse(responseCode = "200", description = "Page of products")
+            @ApiResponse(responseCode = "200", description = "Page of products",
+                headers = {
+                    @io.swagger.v3.oas.annotations.headers.Header(name = "Cache-Control", description = "Cache control directive", example = "public, max-age=60")
+                })
         }
     )
     public Page<ProductCardDto> listProducts(@RequestParam(value = "q", required = false) String q,
@@ -61,14 +86,27 @@ public class PublicController {
     @GetMapping("/products/{slug}")
     @Operation(summary = "Get product details",
         responses = {
-            @ApiResponse(responseCode = "200", description = "Product detail"),
+            @ApiResponse(responseCode = "200", description = "Product detail",
+                headers = {
+                    @io.swagger.v3.oas.annotations.headers.Header(name = "ETag", description = "Entity tag for caching", example = "\"def456\""),
+                    @io.swagger.v3.oas.annotations.headers.Header(name = "Last-Modified", description = "Last modification date", example = "Wed, 21 Oct 2015 07:28:00 GMT"),
+                    @io.swagger.v3.oas.annotations.headers.Header(name = "Cache-Control", description = "Cache control directive", example = "public, max-age=300")
+                }),
+            @ApiResponse(responseCode = "304", description = "Not modified (conditional request)"),
             @ApiResponse(responseCode = "404", description = "Not found",
                 content = @Content(schema = @Schema(implementation = org.codeacademy.baltaragisapi.web.ProblemSchema.class),
                     examples = @ExampleObject(value = "{\n  \"type\": \"https://api.baltaragis.dev/problems/not_found\",\n  \"title\": \"Not Found\",\n  \"status\": 404,\n  \"detail\": \"Product not found\",\n  \"instance\": \"/api/v1/products/bad\",\n  \"code\": \"NOT_FOUND\"\n}")))
         }
     )
-    public ProductDetailDto getProduct(@PathVariable String slug) {
-        return catalogService.getBySlug(slug);
+    public ResponseEntity<ProductDetailDto> getProduct(@PathVariable String slug) {
+        ProductDetailDto product = catalogService.getBySlug(slug);
+        String etag = generateETag(product);
+        OffsetDateTime lastModified = product.getUpdatedAt();
+        
+        return ResponseEntity.ok()
+            .eTag(etag)
+            .lastModified(lastModified.toInstant())
+            .body(product);
     }
 
     @PostMapping("/products/{slug}/waitlist")
@@ -105,7 +143,7 @@ public class PublicController {
                 content = @Content(schema = @Schema(implementation = org.codeacademy.baltaragisapi.web.ProblemSchema.class))),
             @ApiResponse(responseCode = "409", description = "Insufficient stock",
                 content = @Content(schema = @Schema(implementation = org.codeacademy.baltaragisapi.web.ProblemSchema.class),
-                    examples = @ExampleObject(value = "{\n  \"type\": \"https://api.baltaragis.dev/problems/insufficient_stock\",\n  \"title\": \"Conflict\",\n  \"status\": 409,\n  \"detail\": \"Insufficient stock\",\n  \"code\": \"INSUFFICIENT_STOCK\"\n}")))
+                    examples = @ExampleObject(value = "{\n  \"type\": \"https://api.baltaragis.dev/problems/insufficient_stock\",\n  \"title\": \"Conflict\",\n  \"detail\": \"Insufficient stock\",\n  \"code\": \"INSUFFICIENT_STOCK\"\n}")))
         }
     )
     public CreateOrderResponse createOrder(@RequestBody CreateOrderRequest body) {
@@ -114,20 +152,42 @@ public class PublicController {
 
     @GetMapping("/pages")
     @Operation(summary = "List published pages")
-    public java.util.List<PageDto> pages() {
+    public List<PageDto> pages() {
         return pageService.listPublished();
     }
 
     @GetMapping("/pages/{slug}")
     @Operation(summary = "Get page by slug",
         responses = {
-            @ApiResponse(responseCode = "200", description = "Page"),
+            @ApiResponse(responseCode = "200", description = "Page",
+                headers = {
+                    @io.swagger.v3.oas.annotations.headers.Header(name = "ETag", description = "Entity tag for caching", example = "\"ghi789\""),
+                    @io.swagger.v3.oas.annotations.headers.Header(name = "Last-Modified", description = "Last modification date", example = "Wed, 21 Oct 2015 07:28:00 GMT"),
+                    @io.swagger.v3.oas.annotations.headers.Header(name = "Cache-Control", description = "Cache control directive", example = "public, max-age=180")
+                }),
+            @ApiResponse(responseCode = "304", description = "Not modified (conditional request)"),
             @ApiResponse(responseCode = "404", description = "Not found",
                 content = @Content(schema = @Schema(implementation = org.codeacademy.baltaragisapi.web.ProblemSchema.class)))
         }
     )
-    public PageDto pageBySlug(@PathVariable String slug) {
-        return pageService.getBySlug(slug);
+    public ResponseEntity<PageDto> pageBySlug(@PathVariable String slug) {
+        PageDto page = pageService.getBySlug(slug);
+        String etag = generateETag(page);
+        OffsetDateTime lastModified = page.getUpdatedAt();
+        
+        return ResponseEntity.ok()
+            .eTag(etag)
+            .lastModified(lastModified.toInstant())
+            .body(page);
+    }
+
+    /**
+     * Generate ETag for caching based on entity content and last modified time
+     */
+    private String generateETag(Object entity) {
+        // Simple ETag generation - in production you might want a more sophisticated approach
+        int hashCode = entity.hashCode();
+        return "\"" + Integer.toHexString(hashCode) + "\"";
     }
 }
 

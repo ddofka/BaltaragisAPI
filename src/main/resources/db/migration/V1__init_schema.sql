@@ -5,7 +5,9 @@ CREATE TABLE artist_profile (
   name VARCHAR(255) NOT NULL,
   bio TEXT,
   hero_image_url VARCHAR(1024),
-  socials TEXT
+  socials TEXT,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE product (

@@ -3,6 +3,7 @@ package org.codeacademy.baltaragisapi.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "artist_profile")
@@ -26,6 +27,8 @@ public class ArtistProfile {
     @Column(columnDefinition = "TEXT")
     private String socials;
 
+    @Column(name = "updated_at", nullable = false)
+    private OffsetDateTime updatedAt;
 }
 
 
