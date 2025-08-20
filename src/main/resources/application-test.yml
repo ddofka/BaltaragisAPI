@@ -10,12 +10,12 @@ spring:
     show-sql: false
   flyway:
     enabled: true
-    locations: classpath:db/migration
+    locations: classpath:db/migration,classpath:dev-migration
+  main:
+    banner-mode: "off"
+
 logging:
   level:
     root: WARN
-spring:
-  main:
-    banner-mode: "off"
 
 
