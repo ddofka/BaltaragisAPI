@@ -22,5 +22,17 @@ spring:
     console:
       enabled: true
       path: /h2-console
+  # MailHog configuration for development
+  mail:
+    host: localhost
+    port: 1025
+    username: 
+    password: 
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
 
 

@@ -17,9 +17,11 @@ import java.util.List;
 public class AdminProductService {
 
     private final ProductRepository productRepository;
+    private final WaitlistNotificationService waitlistNotificationService;
 
-    public AdminProductService(ProductRepository productRepository) {
+    public AdminProductService(ProductRepository productRepository, WaitlistNotificationService waitlistNotificationService) {
         this.productRepository = productRepository;
+        this.waitlistNotificationService = waitlistNotificationService;
     }
 
     public List<Product> getAllProducts() {
@@ -51,11 +53,22 @@ public class AdminProductService {
         product.setCreatedAt(now);
         product.setUpdatedAt(now);
 
-        return productRepository.save(product);
+        Product savedProduct = productRepository.save(product);
+        
+        // Check if we should send waitlist notifications for newly created products
+        if (savedProduct.getIsPublished() && savedProduct.getQuantity() > 0) {
+            waitlistNotificationService.checkAndSendWaitlistNotifications(savedProduct, 0, false);
+        }
+        
+        return savedProduct;
     }
 
     public Product updateProduct(Long id, UpdateProductRequest request) {
         Product product = getProductById(id);
+        
+        // Store previous values for waitlist notification logic
+        Integer previousQuantity = product.getQuantity();
+        Boolean previousIsPublished = product.getIsPublished();
         
         if (request.getName() != null) {
             product.setName(request.getName());
@@ -80,7 +93,12 @@ public class AdminProductService {
         }
         
         product.setUpdatedAt(OffsetDateTime.now());
-        return productRepository.save(product);
+        Product updatedProduct = productRepository.save(product);
+        
+        // Check if we should send waitlist notifications
+        waitlistNotificationService.checkAndSendWaitlistNotifications(updatedProduct, previousQuantity, previousIsPublished);
+        
+        return updatedProduct;
     }
 
     public void deleteProduct(Long id) {
