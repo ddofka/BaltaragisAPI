@@ -40,5 +40,8 @@ app:
   media:
     base-path: media
     base-url: http://localhost:8080/media
+  # Payment configuration
+  payments:
+    enabled: ${PAYMENTS_ENABLED:false}
 
 
