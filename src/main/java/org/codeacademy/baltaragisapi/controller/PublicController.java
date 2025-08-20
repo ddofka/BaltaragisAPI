@@ -47,8 +47,7 @@ public class PublicController {
 
     @PostMapping("/products/{slug}/waitlist")
     public ResponseEntity<?> addToWaitlist(@PathVariable String slug, @RequestBody WaitlistRequest body) {
-        var product = catalogService.getBySlug(slug);
-        if (product == null) return ResponseEntity.notFound().build();
+        var product = catalogService.getBySlug(slug); // throws NotFound if missing
         WaitlistAddStatus status = waitlistService.addToWaitlist(product.getId(), body.getEmail());
         return ResponseEntity.ok(status);
     }

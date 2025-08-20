@@ -6,7 +6,9 @@ import org.codeacademy.baltaragisapi.entity.Order;
 import org.codeacademy.baltaragisapi.entity.OrderItem;
 import org.codeacademy.baltaragisapi.entity.Product;
 import org.codeacademy.baltaragisapi.enums.OrderStatus;
-import org.codeacademy.baltaragisapi.exception.DomainException;
+import org.codeacademy.baltaragisapi.exception.ValidationException;
+import org.codeacademy.baltaragisapi.exception.NotFoundException;
+import org.codeacademy.baltaragisapi.exception.InsufficientStockException;
 import org.codeacademy.baltaragisapi.mapper.OrderMapper;
 import org.codeacademy.baltaragisapi.repository.OrderItemRepository;
 import org.codeacademy.baltaragisapi.repository.OrderRepository;
@@ -34,20 +36,23 @@ public class CheckoutService {
     @Transactional
     public CreateOrderResponse createSingleItemOrder(CreateOrderRequest req) {
         if ((req.getProductId() == null && (req.getProductSlug() == null || req.getProductSlug().isBlank())) || req.getQty() == null || req.getQty() <= 0) {
-            throw new DomainException("Invalid order request");
+            java.util.Map<String, String> errors = new java.util.HashMap<>();
+            if (req.getQty() == null || req.getQty() <= 0) errors.put("qty", "Quantity must be greater than 0");
+            if (req.getProductId() == null && (req.getProductSlug() == null || req.getProductSlug().isBlank())) errors.put("product", "productId or productSlug required");
+            throw new ValidationException("Invalid order request", errors);
         }
 
         Product product = req.getProductId() != null
                 ? productRepository.findById(req.getProductId()).orElse(null)
                 : productRepository.findBySlug(req.getProductSlug()).orElse(null);
         if (product == null) {
-            throw new DomainException("Product not found");
+            throw new NotFoundException("Product not found");
         }
 
         int requested = req.getQty();
         int available = product.getQuantity() != null ? product.getQuantity() : 0;
         if (requested > available) {
-            throw new DomainException("Insufficient stock");
+            throw new InsufficientStockException("Insufficient stock");
         }
 
         int itemPriceCents = product.getPriceCents();

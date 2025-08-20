@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import org.codeacademy.baltaragisapi.dto.ProductCardDto;
 import org.codeacademy.baltaragisapi.dto.ProductDetailDto;
 import org.codeacademy.baltaragisapi.entity.Product;
+import org.codeacademy.baltaragisapi.exception.NotFoundException;
 import org.codeacademy.baltaragisapi.mapper.ProductMapper;
 import org.codeacademy.baltaragisapi.repository.ProductPhotoRepository;
 import org.codeacademy.baltaragisapi.repository.ProductRepository;
@@ -47,8 +48,8 @@ public class CatalogService {
     }
 
     public ProductDetailDto getBySlug(String slug) {
-        Product product = productRepository.findBySlug(slug).orElse(null);
-        if (product == null) return null;
+        Product product = productRepository.findBySlug(slug)
+                .orElseThrow(() -> new NotFoundException("Product not found"));
         ProductDetailDto base = productMapper.toDetail(product);
         List<String> urls = photoRepository.findAllByProductIdOrderBySortOrderAscIdAsc(product.getId())
                 .stream().map(p -> p.getUrl()).collect(Collectors.toList());
