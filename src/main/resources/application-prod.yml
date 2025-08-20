@@ -1,0 +1,10 @@
+server:
+  error:
+    include-stacktrace: never
+  shutdown: graceful
+
+logging:
+  level:
+    root: INFO
+
+
