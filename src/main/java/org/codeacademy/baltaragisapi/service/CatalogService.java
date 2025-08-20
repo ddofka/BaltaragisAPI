@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.codeacademy.baltaragisapi.entity.ProductPhoto;
 
 @Service
 public class CatalogService {
@@ -50,20 +51,13 @@ public class CatalogService {
     public ProductDetailDto getBySlug(String slug) {
         Product product = productRepository.findBySlug(slug)
                 .orElseThrow(() -> new NotFoundException("Product not found"));
-        ProductDetailDto base = productMapper.toDetail(product);
-        List<String> urls = photoRepository.findAllByProductIdOrderBySortOrderAscIdAsc(product.getId())
-                .stream().map(p -> p.getUrl()).collect(Collectors.toList());
-        return ProductDetailDto.builder()
-                .id(base.getId())
-                .name(base.getName())
-                .slug(base.getSlug())
-                .price(base.getPrice())
-                .currency(base.getCurrency())
-                .isInStock(base.isInStock())
-                .longDesc(base.getLongDesc())
-                .quantity(base.getQuantity())
-                .photos(urls)
-                .build();
+        
+        List<String> photoUrls = photoRepository.findAllByProductIdOrderBySortOrderAscIdAsc(product.getId())
+                .stream()
+                .map(p -> p.getUrl())
+                .collect(Collectors.toList());
+        
+        return productMapper.toDetail(product, photoUrls);
     }
 }
 
