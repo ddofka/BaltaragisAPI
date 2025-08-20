@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface PageRepository extends JpaRepository<Page, Long> {
     Optional<Page> findBySlugAndIsPublishedTrue(String slug);
+    boolean existsBySlug(String slug);
 }
 
 
