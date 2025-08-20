@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.OffsetDateTime;
 
 @Service
+@Transactional
 public class CheckoutService {
 
     private final ProductRepository productRepository;
@@ -33,7 +34,6 @@ public class CheckoutService {
         this.orderMapper = orderMapper;
     }
 
-    @Transactional
     public CreateOrderResponse createSingleItemOrder(CreateOrderRequest req) {
         if ((req.getProductId() == null && (req.getProductSlug() == null || req.getProductSlug().isBlank())) || req.getQty() == null || req.getQty() <= 0) {
             java.util.Map<String, String> errors = new java.util.HashMap<>();
