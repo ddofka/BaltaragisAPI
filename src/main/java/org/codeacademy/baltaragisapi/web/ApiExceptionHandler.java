@@ -4,6 +4,7 @@ import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
+import org.codeacademy.baltaragisapi.exception.ConflictException;
 import org.codeacademy.baltaragisapi.exception.InsufficientStockException;
 import org.codeacademy.baltaragisapi.exception.NotFoundException;
 import org.codeacademy.baltaragisapi.exception.ValidationException;
@@ -42,6 +43,12 @@ public class ApiExceptionHandler {
     @ExceptionHandler(InsufficientStockException.class)
     public ResponseEntity<ProblemDetails> handleStock(InsufficientStockException ex, WebRequest req) {
         return problem(HttpStatus.CONFLICT, "INSUFFICIENT_STOCK", ex.getMessage(), req, null);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ProblemDetails> handleConflict(ConflictException ex, WebRequest req) {
+        String code = ex.getMessage().contains("slug") ? "DUPLICATE_SLUG" : "CONFLICT";
+        return problem(HttpStatus.CONFLICT, code, ex.getMessage(), req, null);
     }
 
     @ExceptionHandler(ValidationException.class)
