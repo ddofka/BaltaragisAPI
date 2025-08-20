@@ -42,23 +42,23 @@ class TranslationServiceTest {
     void testGetTranslationsForLocale_Success() {
         // Given
         String locale = "en-US";
-        List<Object[]> keyValuePairs = Arrays.asList(
-            new Object[]{"common.add_to_cart", "Add to Cart"},
-            new Object[]{"common.loading", "Loading..."}
+        List<Translation> translations = Arrays.asList(
+            createTranslation("common.add_to_cart", "Add to Cart"),
+            createTranslation("common.loading", "Loading...")
         );
         
-        when(translationRepository.findKeyValuePairsByLocale(locale)).thenReturn(keyValuePairs);
+        when(translationRepository.findByLocaleOrderByKeyAsc(locale)).thenReturn(translations);
         when(localeResolverService.isSupportedLocale(locale)).thenReturn(true);
         
         // When
-        Map<String, String> translations = translationService.getTranslationsForLocale(locale);
+        Map<String, String> result = translationService.getTranslationsForLocale(locale);
         
         // Then
-        assertEquals(2, translations.size());
-        assertEquals("Add to Cart", translations.get("common.add_to_cart"));
-        assertEquals("Loading...", translations.get("common.loading"));
+        assertEquals(2, result.size());
+        assertEquals("Add to Cart", result.get("common.add_to_cart"));
+        assertEquals("Loading...", result.get("common.loading"));
         
-        verify(translationRepository).findKeyValuePairsByLocale(locale);
+        verify(translationRepository).findByLocaleOrderByKeyAsc(locale);
     }
     
     @Test
@@ -245,5 +245,15 @@ class TranslationServiceTest {
         // Then
         assertEquals(expectedLocale, result);
         verify(localeResolverService).resolveLocale();
+    }
+    
+    private Translation createTranslation(String key, String value) {
+        Translation translation = new Translation();
+        translation.setKey(key);
+        translation.setValue(value);
+        translation.setLocale("en-US");
+        translation.setId(1L);
+        translation.setUpdatedAt(OffsetDateTime.now());
+        return translation;
     }
 }
