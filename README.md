@@ -1,0 +1,197 @@
+# Baltaragis API
+
+A Spring Boot e-commerce API for the Baltaragis art and accessories brand, built with modern Java and Spring technologies.
+
+## 🚀 Features
+
+### ✅ Completed Features
+
+#### 1. **Core E-commerce Infrastructure**
+- **Product Management**: Full CRUD operations for products with categories, pricing, and inventory
+- **Order System**: Order creation, status management, and checkout flow
+- **Artist Profile**: Artist information, bio, and social media links
+- **Content Pages**: Dynamic page management with Markdown support
+- **Photo Management**: Product photos with metadata (dimensions, alt text, sort order)
+
+#### 2. **Internationalization (i18n) Foundation**
+- **Multi-language Support**: Lithuanian (LT) and English (EN) locales
+- **Smart Locale Detection**: IP country-based default (LT for Lithuania, EN elsewhere)
+- **Override Support**: Accept-Language header and X-Locale query/header support
+- **Editable Translations**: Admin CRUD operations for UI translations
+- **Public API**: `GET /api/v1/i18n/{locale}` endpoint for frontend translation keys
+
+#### 3. **Waitlist Email Notification System**
+- **Stock Monitoring**: Automatic detection when products come back in stock
+- **Email Notifications**: SMTP-based email system using MailHog for development
+- **Waitlist Management**: Subscriber tracking with notification history
+- **Idempotent Notifications**: Prevents duplicate emails for repeated stock changes
+- **Localized Templates**: Email content in user's preferred language
+
+#### 4. **Payments Stub System**
+- **Feature Flag Control**: `payments.enabled` configuration toggle
+- **Checkout Sessions**: `POST /api/v1/orders/checkout-session` endpoint
+- **Stub Implementation**: Development-friendly payment simulation
+- **Status Tracking**: Checkout session status management
+- **Thymeleaf Integration**: HTML checkout page for payment simulation
+
+#### 5. **Enhanced Seed Data**
+- **9 Products Total**: Mix of in-stock (6) and out-of-stock (3) products
+- **Product Variety**: Art prints, leather goods, accessories, tech items
+- **Realistic Data**: Proper names, descriptions, pricing, and inventory levels
+- **Photo Coverage**: 2-3 photos per product with descriptive alt text
+- **Category Diversity**: Wallets, cardholders, key fobs, belts, phone cases, notebooks
+
+## 🛠 Technology Stack
+
+- **Java 21** with Spring Boot 3.5.4
+- **Spring Data JPA** with Hibernate ORM
+- **H2 Database** (development) with Flyway migrations
+- **Spring Security** with custom admin authentication
+- **Spring Boot Mail** with MailHog integration
+- **Thymeleaf** for HTML template rendering
+- **Lombok** for boilerplate reduction
+- **Maven** for build automation
+- **OpenAPI 3** with Swagger UI documentation
+
+## 🚦 Getting Started
+
+### Prerequisites
+- Java 21+
+- Maven 3.6+
+
+### Development Setup
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd BaltaragisAPI
+   ```
+
+2. **Run the application**
+   ```bash
+   # Development profile (includes seed data)
+   ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+   
+   # Production profile
+   ./mvnw spring-boot:run
+   ```
+
+3. **Access the API**
+   - **API Documentation**: http://localhost:8080/swagger-ui.html
+   - **H2 Console**: http://localhost:8080/h2-console
+   - **Health Check**: http://localhost:8080/actuator/health
+
+### Environment Configuration
+```yaml
+# application.yml
+app:
+  media:
+    base-path: media
+    base-url: http://localhost:8080/media
+  payments:
+    enabled: ${PAYMENTS_ENABLED:false}
+
+# application-dev.yml
+app:
+  payments:
+    enabled: true
+```
+
+## 📚 API Endpoints
+
+### Public Endpoints
+- `GET /api/v1/products` - List published products
+- `GET /api/v1/products/{slug}` - Get product details
+- `GET /api/v1/artist` - Get artist profile
+- `GET /api/v1/pages` - List published pages
+- `GET /api/v1/i18n/{locale}` - Get translations for locale
+- `POST /api/v1/orders` - Create new order
+
+### Payment Endpoints (when enabled)
+- `POST /api/v1/orders/checkout-session` - Create checkout session
+- `GET /api/v1/orders/checkout-session/status` - Check session status
+- `GET /api/v1/payments/stub-checkout` - Development checkout page
+
+### Admin Endpoints
+- `POST /api/v1/admin/products` - Create product
+- `PUT /api/v1/admin/products/{id}` - Update product
+- `DELETE /api/v1/admin/products/{id}` - Delete product
+- `POST /api/v1/admin/products/{id}/photos/upload` - Upload product photos
+- `GET /api/v1/admin/translations` - List translations
+- `POST /api/v1/admin/translations` - Create/update translation
+
+## 🗄 Database Schema
+
+### Core Tables
+- `product` - Product information, pricing, inventory
+- `product_photo` - Product images with metadata
+- `order` - Customer orders and status
+- `artist_profile` - Artist information and social links
+- `page` - Content pages with Markdown support
+- `translation` - Internationalization keys and values
+
+### Key Relationships
+- Products have multiple photos (one-to-many)
+- Orders reference products (many-to-one)
+- Translations are key-value pairs with locale
+
+## 🔧 Development Workflow
+
+### Branch Strategy
+- **Feature branches**: `feature/feature-name`
+- **Pull requests**: Required for all changes
+- **CI/CD**: Automated testing and validation
+
+### Testing
+```bash
+# Run all tests
+./mvnw test
+
+# Run specific test class
+./mvnw test -Dtest=ProductServiceTest
+
+# Run integration tests
+./mvnw test -Dtest=PublicApiIntegrationTest
+```
+
+### Database Migrations
+- **Flyway**: Database version control
+- **Development**: `src/main/resources/dev-migration/`
+- **Production**: `src/main/resources/db/migration/`
+
+## 📖 Documentation
+
+- **API Documentation**: [OpenAPI/Swagger UI](http://localhost:8080/swagger-ui.html)
+- **i18n Guide**: [docs/i18n.md](docs/i18n.md)
+- **Waitlist System**: [docs/WAITLIST_EMAILS.md](docs/WAITLIST_EMAILS.md)
+- **Media Pipeline**: [MEDIA_PIPELINE.md](MEDIA_PIPELINE.md)
+
+## 🎯 Project Status
+
+### ✅ Completed Milestones
+1. **Core Infrastructure** - Basic e-commerce functionality
+2. **Internationalization** - Multi-language support with smart detection
+3. **Waitlist System** - Stock notification emails
+4. **Payment Stub** - Checkout flow preparation
+5. **Seed Data Enhancement** - Comprehensive development data
+
+### 🔄 Next Steps
+- **Media Pipeline**: S3/R2 integration for production photo storage
+- **Real Payment Integration**: Stripe or similar payment processor
+- **User Authentication**: Customer account management
+- **Inventory Management**: Advanced stock tracking and alerts
+
+## 🤝 Contributing
+
+1. Create a feature branch from `master`
+2. Implement your changes with tests
+3. Create a pull request with descriptive title and body
+4. Ensure CI passes before requesting review
+5. Merge after approval
+
+## 📄 License
+
+This project is proprietary to Baltaragis. All rights reserved.
+
+---
+
+**Built with ❤️ using Spring Boot and modern Java technologies**
