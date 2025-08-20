@@ -23,4 +23,10 @@ springdoc:
   swagger-ui:
     path: /swagger-ui
 
+# Media storage configuration
+app:
+  media:
+    base-path: media
+    base-url: http://localhost:8080/media
+
 
