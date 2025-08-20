@@ -35,4 +35,9 @@ spring:
           starttls:
             enable: false
 
+# Development-specific configuration
+app:
+  payments:
+    enabled: true
+
 
