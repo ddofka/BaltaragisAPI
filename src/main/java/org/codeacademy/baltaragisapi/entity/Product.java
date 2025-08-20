@@ -1,6 +1,8 @@
 package org.codeacademy.baltaragisapi.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import java.time.OffsetDateTime;
 
 @Entity
@@ -8,6 +10,8 @@ import java.time.OffsetDateTime;
         @Index(name = "idx_product_slug", columnList = "slug", unique = true),
         @Index(name = "idx_product_published", columnList = "is_published")
 })
+@Getter
+@Setter
 public class Product {
 
     @Id

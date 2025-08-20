@@ -1,9 +1,13 @@
 package org.codeacademy.baltaragisapi.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "artist_profile")
+@Getter
+@Setter
 public class ArtistProfile {
 
     @Id

@@ -1,9 +1,13 @@
 package org.codeacademy.baltaragisapi.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "product_photo")
+@Getter
+@Setter
 public class ProductPhoto {
 
     @Id

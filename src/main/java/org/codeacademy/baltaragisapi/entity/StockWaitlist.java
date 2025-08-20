@@ -2,11 +2,15 @@ package org.codeacademy.baltaragisapi.entity;
 
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "stock_waitlist", uniqueConstraints = {
         @UniqueConstraint(name = "uk_waitlist_product_email", columnNames = {"product_id", "email"})
 })
+@Getter
+@Setter
 public class StockWaitlist {
 
     @Id

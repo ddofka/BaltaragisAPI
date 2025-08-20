@@ -2,10 +2,14 @@ package org.codeacademy.baltaragisapi.entity;
 
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
+import lombok.Getter;
+import lombok.Setter;
 import org.codeacademy.baltaragisapi.enums.OrderStatus;
 
 @Entity
 @Table(name = "orders")
+@Getter
+@Setter
 public class Order {
 
     @Id
