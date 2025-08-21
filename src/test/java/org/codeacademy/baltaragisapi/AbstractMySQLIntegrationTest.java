@@ -13,7 +13,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * This class sets up:
  * - MySQL container via Testcontainers
  * - testcontainers profile for MySQL-specific configuration
- * - Flyway migrations against MySQL
+ * - Hibernate DDL auto-generation (create-drop) for schema setup
  * 
  * Tests extending this class will run against a real MySQL database
  * instead of H2, ensuring production-like behavior in CI.
@@ -23,8 +23,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Import(TestcontainersConfiguration.class)
 @Testcontainers
 @TestPropertySource(properties = {
-    "spring.jpa.hibernate.ddl-auto=validate",
-    "spring.flyway.enabled=true"
+    "spring.jpa.hibernate.ddl-auto=create-drop",
+    "spring.flyway.enabled=false"
 })
 public abstract class AbstractMySQLIntegrationTest {
     // This class provides the configuration for MySQL integration tests
