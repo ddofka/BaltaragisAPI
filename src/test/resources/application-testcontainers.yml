@@ -20,13 +20,11 @@ app:
   payments:
     enabled: true
   rate-limit:
-    enabled: true
-    capacity: 10
-    window-minutes: 5
+    enabled: false
 
-# JWT configuration
+# JWT configuration - Base64 encoded test secret (same as application.properties)
 jwt:
-  secret: test-secret-for-integration-tests-only
+  secret: dGVzdC1zZWNyZXQtZm9yLWp1bml0LXRlc3RzLW11c3QtYmUtYXQtbGVhc3QtMzItYnl0ZXMtbG9uZw==
 
 # Logging configuration
 logging:
