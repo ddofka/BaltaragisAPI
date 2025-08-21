@@ -17,3 +17,4 @@ INSERT INTO translation (translation_key, locale, translation_value, updated_at)
 ('products.additional_pieces', 'lt-LT', 'Papildomi kūriniai ruošiami ir bus prieinami netrukus.', CURRENT_TIMESTAMP),
 ('products.cta_text', 'lt-LT', 'Domina individualus kūrinys? Susisiekite su mumis, kad aptartumėte savo viziją.', CURRENT_TIMESTAMP),
 ('products.page_title', 'lt-LT', 'Darbai', CURRENT_TIMESTAMP);
+
