@@ -3,12 +3,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-    database-platform: org.hibernate.dialect.MySQLDialect
-    properties:
-      hibernate:
-        format_sql: false
-        dialect: org.hibernate.dialect.MySQLDialect
     show-sql: false
+    # Don't force MySQL dialect - let Spring Boot auto-detect based on actual database
+    # When Testcontainers provides MySQL connection, MySQL dialect will be used automatically
   flyway:
     enabled: false
 
