@@ -43,5 +43,10 @@ app:
   # Payment configuration
   payments:
     enabled: ${PAYMENTS_ENABLED:false}
+  # Rate limiting configuration (production defaults)
+  rate-limit:
+    enabled: true
+    capacity: 5
+    window-minutes: 5
 
 

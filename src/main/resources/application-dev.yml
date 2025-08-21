@@ -39,5 +39,10 @@ spring:
 app:
   payments:
     enabled: true
+  # Rate limiting configuration (more lenient for dev)
+  rate-limit:
+    enabled: true
+    capacity: 10
+    window-minutes: 5
 
 
