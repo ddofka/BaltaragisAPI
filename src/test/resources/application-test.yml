@@ -11,6 +11,7 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration,classpath:dev-migration
+    baseline-on-migrate: true
   main:
     banner-mode: "off"
 logging:

@@ -1,0 +1,32 @@
+# Test configuration using Testcontainers MySQL
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    # Don't force MySQL dialect - let Spring Boot auto-detect based on actual database
+    # When Testcontainers provides MySQL connection, MySQL dialect will be used automatically
+  flyway:
+    enabled: false
+
+# Application configuration - inherit from main config
+app:
+  media:
+    base-path: media
+    base-url: http://localhost:8080/media
+  payments:
+    enabled: true
+  rate-limit:
+    enabled: false
+
+# JWT configuration - Base64 encoded test secret (same as application.properties)
+jwt:
+  secret: dGVzdC1zZWNyZXQtZm9yLWp1bml0LXRlc3RzLW11c3QtYmUtYXQtbGVhc3QtMzItYnl0ZXMtbG9uZw==
+
+# Logging configuration
+logging:
+  level:
+    org.springframework.web: INFO
+    org.testcontainers: INFO
+    com.github.dockerjava: WARN
+    org.apache.http: WARN
