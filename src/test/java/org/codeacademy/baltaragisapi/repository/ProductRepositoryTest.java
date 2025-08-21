@@ -13,7 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,7 +29,7 @@ class ProductRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		LocalDateTime now = LocalDateTime.now();
+		OffsetDateTime now = OffsetDateTime.now();
 		
 		// Create test products
 		Product publishedProduct = new Product();
@@ -69,8 +69,8 @@ class ProductRepositoryTest {
 		assertThat(page.getContent()).hasSize(1);
 		assertThat(page.getContent().get(0).getIsPublished()).isTrue();
 
-		// Test combined specification with query filter
-		Specification<Product> spec = Specification.where(ProductSpecifications.isPublished())
+		// Test combined specification with query filter  
+		Specification<Product> spec = ProductSpecifications.isPublished()
 			.and(ProductSpecifications.byQuery("print"));
 		Page<Product> filtered = productRepository.findAll(spec, PageRequest.of(0, 10));
 		assertThat(filtered).isNotNull();
