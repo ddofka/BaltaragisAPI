@@ -37,6 +37,8 @@ spring:
 
 # Development-specific configuration
 app:
+  # Use localhost for development sitemap
+  base-url: http://localhost:8080
   payments:
     enabled: true
   # Rate limiting configuration (more lenient for dev)

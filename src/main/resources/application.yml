@@ -35,8 +35,11 @@ springdoc:
   swagger-ui:
     path: /swagger-ui
 
-# Media storage configuration
+# Application configuration
 app:
+  # Base URL for sitemap generation
+  base-url: ${BASE_URL:https://www.baltaragis.com}
+  # Media storage configuration
   media:
     base-path: media
     base-url: http://localhost:8080/media
