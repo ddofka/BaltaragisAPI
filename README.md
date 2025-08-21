@@ -107,6 +107,7 @@ A Spring Boot e-commerce API for the Baltaragis art and accessories brand, built
 ```yaml
 # application.yml
 app:
+  base-url: ${BASE_URL:https://www.baltaragis.com}  # For sitemap generation
   media:
     base-path: media
     base-url: http://localhost:8080/media
@@ -119,6 +120,7 @@ app:
 
 # application-dev.yml
 app:
+  base-url: http://localhost:8080  # Development URL for sitemap
   payments:
     enabled: true
   rate-limit:
@@ -147,6 +149,10 @@ jwt:
 - `GET /api/v1/i18n/{locale}` - Get translations for locale
 - `POST /api/v1/orders` - Create new order (rate limited)
 - `POST /api/v1/products/{slug}/waitlist` - Join waitlist (rate limited)
+
+### SEO Endpoints
+- `GET /sitemap.xml` - Dynamic sitemap with all published content
+- `GET /robots.txt` - Search engine crawling directives
 
 ### Payment Endpoints (when enabled)
 - `POST /api/v1/orders/checkout-session` - Create checkout session
@@ -200,6 +206,45 @@ jwt:
 - **Development**: `src/main/resources/dev-migration/`
 - **Production**: `src/main/resources/db/migration/`
 
+## 🔍 SEO & Search Engine Optimization
+
+The API provides dynamic SEO endpoints that automatically include all published content without requiring frontend rebuilds.
+
+### Sitemap.xml
+- **Endpoint**: `GET /sitemap.xml`
+- **Content**: Dynamic XML sitemap including:
+  - Home page (`/`)
+  - Products listing (`/products`)
+  - Individual product pages (`/products/{slug}`)
+  - Published content pages (`/pages/{slug}`)
+- **Features**:
+  - Automatic inclusion of newly published content
+  - `lastmod` timestamps from database
+  - Appropriate `changefreq` and `priority` values
+  - Multilingual support with `hreflang` attributes (EN/LT)
+  - Cache headers (5-minute TTL + ETag)
+
+### Robots.txt
+- **Endpoint**: `GET /robots.txt`
+- **Content**: Search engine crawling directives
+- **Features**:
+  - References sitemap URL
+  - Allows all content crawling
+  - Cache headers (1-hour TTL + ETag)
+
+### Frontend Integration
+The sitemap and robots endpoints are designed to work seamlessly with any frontend:
+```html
+<!-- Reference in HTML head -->
+<link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+```
+
+### Configuration
+```yaml
+app:
+  base-url: https://www.baltaragis.com  # Used for generating absolute URLs
+```
+
 ## 📖 Documentation
 
 - **API Documentation**: [OpenAPI/Swagger UI](http://localhost:8080/swagger-ui.html)
@@ -218,6 +263,7 @@ jwt:
 5. **Seed Data Enhancement** - Comprehensive development data
 6. **Security** - JWT auth and rate limiting
 7. **CI Pipeline** - MySQL testing via Testcontainers
+8. **SEO Optimization** - Dynamic sitemap.xml and robots.txt with caching
 
 ### 🔄 Next Steps
 - **Media Pipeline**: S3/R2 integration for production photo storage
