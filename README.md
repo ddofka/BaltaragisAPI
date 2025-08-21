@@ -20,21 +20,28 @@ A Spring Boot e-commerce API for the Baltaragis art and accessories brand, built
 - **Editable Translations**: Admin CRUD operations for UI translations
 - **Public API**: `GET /api/v1/i18n/{locale}` endpoint for frontend translation keys
 
-#### 3. **Waitlist Email Notification System**
+#### 3. **Security & Rate Limiting**
+- **JWT Authentication**: Stateless JWT-based auth for admin endpoints
+- **Role-Based Access**: ADMIN and EDITOR roles with appropriate permissions
+- **Rate Limiting**: IP-based throttling for sensitive endpoints
+- **CORS Configuration**: Configured for frontend origins
+- **Secure Password Storage**: BCrypt password encoding
+
+#### 4. **Waitlist Email Notification System**
 - **Stock Monitoring**: Automatic detection when products come back in stock
 - **Email Notifications**: SMTP-based email system using MailHog for development
 - **Waitlist Management**: Subscriber tracking with notification history
 - **Idempotent Notifications**: Prevents duplicate emails for repeated stock changes
 - **Localized Templates**: Email content in user's preferred language
 
-#### 4. **Payments Stub System**
+#### 5. **Payments Stub System**
 - **Feature Flag Control**: `payments.enabled` configuration toggle
 - **Checkout Sessions**: `POST /api/v1/orders/checkout-session` endpoint
 - **Stub Implementation**: Development-friendly payment simulation
 - **Status Tracking**: Checkout session status management
 - **Thymeleaf Integration**: HTML checkout page for payment simulation
 
-#### 5. **Enhanced Seed Data**
+#### 6. **Enhanced Seed Data**
 - **9 Products Total**: Mix of in-stock (6) and out-of-stock (3) products
 - **Product Variety**: Art prints, leather goods, accessories, tech items
 - **Realistic Data**: Proper names, descriptions, pricing, and inventory levels
@@ -45,19 +52,32 @@ A Spring Boot e-commerce API for the Baltaragis art and accessories brand, built
 
 - **Java 21** with Spring Boot 3.5.4
 - **Spring Data JPA** with Hibernate ORM
-- **H2 Database** (development) with Flyway migrations
-- **Spring Security** with custom admin authentication
+- **Spring Security** with JWT authentication (HS256)
 - **Spring Boot Mail** with MailHog integration
-- **Thymeleaf** for HTML template rendering
-- **Lombok** for boilerplate reduction
-- **Maven** for build automation
-- **OpenAPI 3** with Swagger UI documentation
+- **Databases**:
+  - H2 (local development)
+  - MySQL (CI/production) via Testcontainers
+- **Migration**: Flyway for schema versioning
+- **Testing**:
+  - JUnit 5
+  - Testcontainers
+  - Spring Boot Test
+- **Rate Limiting**: Bucket4j
+- **Documentation**: OpenAPI 3 with Swagger UI
+- **Build & CI**:
+  - Maven
+  - GitHub Actions
+- **Utilities**:
+  - Lombok
+  - MapStruct
+  - Thymeleaf
 
 ## 🚦 Getting Started
 
 ### Prerequisites
 - Java 21+
 - Maven 3.6+
+- Docker (for MySQL Testcontainers in CI)
 
 ### Development Setup
 1. **Clone the repository**
@@ -68,8 +88,11 @@ A Spring Boot e-commerce API for the Baltaragis art and accessories brand, built
 
 2. **Run the application**
    ```bash
-   # Development profile (includes seed data)
+   # Development profile with H2 (includes seed data)
    ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+   
+   # MySQL with Testcontainers (requires Docker)
+   ./mvnw spring-boot:run -Dspring-boot.run.profiles=testcontainers
    
    # Production profile
    ./mvnw spring-boot:run
@@ -77,7 +100,7 @@ A Spring Boot e-commerce API for the Baltaragis art and accessories brand, built
 
 3. **Access the API**
    - **API Documentation**: http://localhost:8080/swagger-ui.html
-   - **H2 Console**: http://localhost:8080/h2-console
+   - **H2 Console** (dev only): http://localhost:8080/h2-console
    - **Health Check**: http://localhost:8080/actuator/health
 
 ### Environment Configuration
@@ -89,14 +112,32 @@ app:
     base-url: http://localhost:8080/media
   payments:
     enabled: ${PAYMENTS_ENABLED:false}
+  rate-limit:
+    enabled: true
+    capacity: 5
+    window-minutes: 5
 
 # application-dev.yml
 app:
   payments:
     enabled: true
+  rate-limit:
+    capacity: 10  # More lenient for development
+
+jwt:
+  secret: your-base64-encoded-secret  # Required for production
 ```
 
 ## 📚 API Endpoints
+
+### Authentication
+- `POST /api/v1/auth/login` - Obtain JWT access token
+  ```json
+  {
+    "username": "admin",
+    "password": "your-password"
+  }
+  ```
 
 ### Public Endpoints
 - `GET /api/v1/products` - List published products
@@ -104,14 +145,15 @@ app:
 - `GET /api/v1/artist` - Get artist profile
 - `GET /api/v1/pages` - List published pages
 - `GET /api/v1/i18n/{locale}` - Get translations for locale
-- `POST /api/v1/orders` - Create new order
+- `POST /api/v1/orders` - Create new order (rate limited)
+- `POST /api/v1/products/{slug}/waitlist` - Join waitlist (rate limited)
 
 ### Payment Endpoints (when enabled)
 - `POST /api/v1/orders/checkout-session` - Create checkout session
 - `GET /api/v1/orders/checkout-session/status` - Check session status
 - `GET /api/v1/payments/stub-checkout` - Development checkout page
 
-### Admin Endpoints
+### Admin Endpoints (requires JWT)
 - `POST /api/v1/admin/products` - Create product
 - `PUT /api/v1/admin/products/{id}` - Update product
 - `DELETE /api/v1/admin/products/{id}` - Delete product
@@ -139,18 +181,18 @@ app:
 ### Branch Strategy
 - **Feature branches**: `feature/feature-name`
 - **Pull requests**: Required for all changes
-- **CI/CD**: Automated testing and validation
+- **CI/CD**: Automated testing with GitHub Actions
 
 ### Testing
 ```bash
-# Run all tests
+# Run all tests with H2 (fast, for local development)
 ./mvnw test
+
+# Run tests with MySQL via Testcontainers (CI environment)
+./mvnw test -Dspring.profiles.active=testcontainers
 
 # Run specific test class
 ./mvnw test -Dtest=ProductServiceTest
-
-# Run integration tests
-./mvnw test -Dtest=PublicApiIntegrationTest
 ```
 
 ### Database Migrations
@@ -162,6 +204,7 @@ app:
 
 - **API Documentation**: [OpenAPI/Swagger UI](http://localhost:8080/swagger-ui.html)
 - **i18n Guide**: [docs/i18n.md](docs/i18n.md)
+- **Testing Strategy**: [docs/testing.md](docs/testing.md)
 - **Waitlist System**: [docs/WAITLIST_EMAILS.md](docs/WAITLIST_EMAILS.md)
 - **Media Pipeline**: [MEDIA_PIPELINE.md](MEDIA_PIPELINE.md)
 
@@ -173,6 +216,8 @@ app:
 3. **Waitlist System** - Stock notification emails
 4. **Payment Stub** - Checkout flow preparation
 5. **Seed Data Enhancement** - Comprehensive development data
+6. **Security** - JWT auth and rate limiting
+7. **CI Pipeline** - MySQL testing via Testcontainers
 
 ### 🔄 Next Steps
 - **Media Pipeline**: S3/R2 integration for production photo storage
