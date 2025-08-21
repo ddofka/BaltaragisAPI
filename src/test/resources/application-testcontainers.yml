@@ -1,0 +1,39 @@
+# Test configuration using Testcontainers MySQL
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.MySQLDialect
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    show-sql: false
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    validate-on-migrate: true
+
+# Application configuration - inherit from main config
+app:
+  media:
+    base-path: media
+    base-url: http://localhost:8080/media
+  payments:
+    enabled: true
+  rate-limit:
+    enabled: true
+    capacity: 10
+    window-minutes: 5
+
+# JWT configuration
+jwt:
+  secret: test-secret-for-integration-tests-only
+
+# Logging configuration
+logging:
+  level:
+    org.springframework.web: INFO
+    org.testcontainers: INFO
+    com.github.dockerjava: WARN
+    org.apache.http: WARN

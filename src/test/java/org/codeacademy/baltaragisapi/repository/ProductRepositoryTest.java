@@ -1,5 +1,6 @@
 package org.codeacademy.baltaragisapi.repository;
 
+import org.codeacademy.baltaragisapi.AbstractMySQLIntegrationTest;
 import org.codeacademy.baltaragisapi.entity.Product;
 import org.codeacademy.baltaragisapi.spec.ProductSpecifications;
 import org.junit.jupiter.api.Test;
@@ -8,11 +9,13 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-class ProductRepositoryTest {
+@ActiveProfiles("testcontainers")
+class ProductRepositoryTest extends AbstractMySQLIntegrationTest {
 
 	@Autowired
 	private ProductRepository productRepository;
