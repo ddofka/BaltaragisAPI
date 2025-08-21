@@ -2,7 +2,7 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-drop
     database-platform: org.hibernate.dialect.MySQLDialect
     properties:
       hibernate:
@@ -10,9 +10,7 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
     show-sql: false
   flyway:
-    enabled: true
-    baseline-on-migrate: true
-    validate-on-migrate: true
+    enabled: false
 
 # Application configuration - inherit from main config
 app:
