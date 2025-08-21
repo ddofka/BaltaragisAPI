@@ -1,11 +1,12 @@
 package org.codeacademy.baltaragisapi.mapper;
 
-import org.codeacademy.baltaragisapi.AbstractMySQLIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ProductMapperTest extends AbstractMySQLIntegrationTest {
+@SpringBootTest
+class ProductMapperTest {
 
     @Autowired
     private ProductMapper mapper;

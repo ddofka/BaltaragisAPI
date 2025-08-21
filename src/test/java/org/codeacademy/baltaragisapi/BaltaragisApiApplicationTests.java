@@ -1,8 +1,12 @@
 package org.codeacademy.baltaragisapi;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
-class BaltaragisApiApplicationTests extends AbstractMySQLIntegrationTest {
+@SpringBootTest
+@ActiveProfiles("dev")
+class BaltaragisApiApplicationTests {
 
     @Test
     void contextLoads() {

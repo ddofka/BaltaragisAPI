@@ -2,14 +2,16 @@ package org.codeacademy.baltaragisapi;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Simple unit test that runs with H2 for local development.
- * This test does not extend AbstractMySQLIntegrationTest and will use H2 locally.
+ * This test uses the default profile (not testcontainers) to use H2.
  */
 @SpringBootTest
+@ActiveProfiles("dev")
 class LocalUnitTest {
 
     @Test
