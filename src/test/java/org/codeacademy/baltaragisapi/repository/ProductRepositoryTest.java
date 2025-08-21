@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,6 +29,8 @@ class ProductRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
+		LocalDateTime now = LocalDateTime.now();
+		
 		// Create test products
 		Product publishedProduct = new Product();
 		publishedProduct.setName("Test Print Product");
@@ -38,6 +41,8 @@ class ProductRepositoryTest {
 		publishedProduct.setCurrency("EUR");
 		publishedProduct.setQuantity(5);
 		publishedProduct.setIsPublished(true);
+		publishedProduct.setCreatedAt(now);
+		publishedProduct.setUpdatedAt(now);
 		entityManager.persist(publishedProduct);
 
 		Product unpublishedProduct = new Product();
@@ -49,6 +54,8 @@ class ProductRepositoryTest {
 		unpublishedProduct.setCurrency("EUR");
 		unpublishedProduct.setQuantity(1);
 		unpublishedProduct.setIsPublished(false);
+		unpublishedProduct.setCreatedAt(now);
+		unpublishedProduct.setUpdatedAt(now);
 		entityManager.persist(unpublishedProduct);
 
 		entityManager.flush();
