@@ -1,5 +1,8 @@
+-- Flyway V3: create i18n translations table and constraints for MySQL
+-- Purpose: store key/value translations per locale; ensure each (translation_key, locale) pair is unique
+-- Note: Versioned migrations should be deterministic; avoid IF NOT EXISTS in DDL
 -- Idempotent create to avoid failures if table already exists (H2/MySQL)
-CREATE TABLE IF NOT EXISTS translation (
+CREATE TABLE translation (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     translation_key VARCHAR(255) NOT NULL,
     locale VARCHAR(10) NOT NULL,
@@ -7,11 +10,10 @@ CREATE TABLE IF NOT EXISTS translation (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Ensure unique key-locale combinations via unique index (idempotent)
-CREATE UNIQUE INDEX IF NOT EXISTS ux_translation_key_locale ON translation (translation_key, locale);
+ALTER TABLE translation
+    ADD CONSTRAINT ux_translation_key_locale UNIQUE (translation_key, locale);
 
--- Index for efficient locale-based queries (idempotent)
-CREATE INDEX IF NOT EXISTS idx_translation_locale ON translation (locale);
+CREATE INDEX idx_translation_locale ON translation (locale);
 
 -- Insert some initial translations for common UI elements
 INSERT INTO translation (translation_key, locale, translation_value, updated_at) VALUES
