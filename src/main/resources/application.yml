@@ -2,7 +2,7 @@ spring:
   application:
     name: BaltaragisAPI
   profiles:
-    active: dev
+    active: mysql
   # Email configuration (can be overridden by environment variables)
   mail:
     host: ${SMTP_HOST:localhost}
